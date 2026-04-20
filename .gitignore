@@ -1,6 +1,16 @@
+# Backend ignores
 backend/.vs/
 backend/bin/
 backend/obj/
 backend/logs/
 backend/reports/
 backend/*.csproj.user
+
+# Frontend ignores
+frontend/node_modules
+frontend/*.local
+frontend/dist
+frontend/.vite
+frontend/.env
+frontend/.env.*
+frontend/.DS_Store
