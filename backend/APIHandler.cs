@@ -1,0 +1,117 @@
+﻿using System.Text.Json;
+using System.Web;
+
+namespace Environmental_Monitor
+{
+    /// <summary>
+    /// Responsible for all API related functions.
+    /// </summary>
+    internal class APIHandler
+    {
+        /// <summary>
+        /// Sends a GET request to the Open-Meteo Uri and deseralizes the returned JSON.
+        /// </summary>
+        /// <returns>Task representing the async operation.</returns>
+        public async Task<WeatherResponse?> CallAPI(double latitude, double longitude)
+        {
+            // Set up the logger
+            Logger logger = new Logger("logs/api.log");
+
+            // Define the query parameters for the API request
+            var queryParams = new Dictionary<string, string>()
+            {
+                { "latitude", latitude.ToString() },
+                { "longitude", longitude.ToString() },
+                { "current", "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,cloud_cover,precipitation,rain,showers,snowfall,wind_speed_10m,wind_direction_10m" },
+                { "timezone", "America/New_York" },
+                { "forecast_days", "1" },
+                { "wind_speed_unit", "ms" },
+                { "precipitation_unit", "inch" },
+                { "daily", "temperature_2m_max,temperature_2m_min,precipitation_probability_max" }
+            };
+
+            // See below for a list of exceptions
+            try
+            {
+                // Construct the full request URI with query parameters
+                var query = HttpUtility.ParseQueryString(string.Empty);
+                foreach (var param in queryParams) { query[param.Key] = param.Value; }
+                string requestUri = "https://api.open-meteo.com/v1/forecast?";
+                string fullRequestUri = requestUri + query.ToString();
+                logger.Info($"Constructed API request URI: {fullRequestUri}");
+
+                // Sends the request, and handles the response
+                using HttpClient client = new HttpClient();
+                logger.Info("Sending a request to the API...");
+                HttpResponseMessage response = await client.GetAsync(fullRequestUri);
+                logger.Info("Request sent. Awaiting response...");
+                string result = await response.Content.ReadAsStringAsync();
+                logger.Info("Response received. Validating response...");
+                WeatherResponse? weather = JsonSerializer.Deserialize<WeatherResponse>(result);
+
+                // Null value checks
+                if (weather == null) { throw new NullReferenceException(nameof(weather)); }
+                if (weather.current == null) { throw new NullReferenceException(nameof(weather.current)); }
+                if (weather.current.time == null) { throw new NullReferenceException(nameof(weather.current.time)); }
+                if (weather.daily == null) { throw new NullReferenceException(nameof(weather.daily)); }
+                if (weather.daily.temperature_2m_max == null) { throw new NullReferenceException(nameof(weather.daily.temperature_2m_max)); }
+                if (weather.daily.temperature_2m_min == null) { throw new NullReferenceException(nameof(weather.daily.temperature_2m_min)); }
+                if (weather.daily.precipitation_probability_max == null) { throw new NullReferenceException(nameof(weather.daily.precipitation_probability_max)); }
+
+                // Attempt to parse time from ISO 8601 to something readable
+                logger.Info("Parsing time...");
+                DateTime time = DateTime.Parse(weather.current.time);
+
+                // Show the information
+                logger.Info($"Time: {time.ToString("f")}"); // full readable format
+                logger.Info($"Latitude and Longitude: {weather.latitude}, {weather.longitude}");
+                logger.Info($"Temp: {weather.current.temperature_2m} C");
+                logger.Info($"Temp: {weather.current.temperature_2m_fahrenheit} F");
+                logger.Info($"Humidity: {weather.current.relative_humidity_2m}%");
+                logger.Info($"Apparent Temp: {weather.current.apparent_temperature}%");
+                logger.Info($"Apparent Temp: {weather.current.apparent_temperature_fahrenheit}%");
+                logger.Info($"Is Day: {weather.current.is_day_yesorno}");
+                logger.Info($"Weather Code: {weather.current.weather_code}");
+                logger.Info($"Weather Name: {weather.current.weather_name}");
+                logger.Info($"Cloud Cover: {weather.current.cloud_cover}");
+                logger.Info($"Precipitation: {weather.current.precipitation} inches");
+                logger.Info($"Rain: {weather.current.rain} inches");
+                logger.Info($"Showers: {weather.current.showers} inches");
+                logger.Info($"Snowfall: {weather.current.snowfall} inches");
+                logger.Info($"Precipitation: {weather.current.precipitation} inches");
+                logger.Info($"Wind Speed: {weather.current.wind_speed_10m} miles per hour");
+                logger.Info($"Wind Direction: {weather.current.wind_direction_10m_compass} ({weather.current.wind_direction_10m} degrees)");
+                logger.Info($"Outside Max Temp: {weather.daily.temperature_2m_max[0]} C");
+                logger.Info($"Outside Max Temp: {weather.daily.temperature_2m_max_fahrenheit} F");
+                logger.Info($"Outside Min Temp: {weather.daily.temperature_2m_min[0]} C");
+                logger.Info($"Outside Min Temp: {weather.daily.temperature_2m_min_fahrenheit} F");
+                logger.Info($"Chance of Precipitation: {weather.daily.precipitation_probability_max[0]} F");
+
+                // Return the deserialized weather response
+                return weather;
+            }
+            // Try GetAsync exceptions
+            catch (InvalidOperationException ex) { logger.Warning($"Invalid operation exception: {ex.Message}"); }
+            catch (HttpRequestException ex) { logger.Warning($"HTTP request exception: {ex.Message}"); }
+            catch (OperationCanceledException ex) { logger.Warning($"Operation canceled exception: {ex.Message}"); }
+            catch (UriFormatException ex) { logger.Warning($"URI format exception: {ex.Message}"); }
+
+            // Try Deserialize exceptions
+            catch (ArgumentNullException ex) { logger.Warning($"Argument null exception: {ex.Message}"); }
+            catch (JsonException ex) { logger.Warning($"JSON exception: {ex.Message}"); }
+            catch (NotSupportedException ex) { logger.Error($"Not supported exception: {ex.Message}"); }
+
+            // Try Parse exceptions
+            catch (FormatException ex) { logger.Warning($"Format exception: {ex.Message}"); }
+
+            // Null value checks
+            catch (NullReferenceException ex) { logger.Error($"Null value exception: {ex.Message}"); }
+
+            // If all else fails
+            catch (Exception ex) { logger.Error($"Error: {ex.Message}"); }
+
+            // On error, return null
+            return null;
+        }
+    }
+}

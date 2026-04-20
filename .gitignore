@@ -1,0 +1,6 @@
+backend/.vs/
+backend/bin/
+backend/obj/
+backend/logs/
+backend/reports/
+backend/*.csproj.user
