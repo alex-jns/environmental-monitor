@@ -85,10 +85,11 @@ const NavBarRight = () => {
     <div className="navbar-right flex gap-4">
       {/** Signed out */}
       <Show when="signed-out">
-        <SignInButton>
-          <button className="weather-card cursor-pointer bg-black/20 backdrop-blur-sm p-2 w-20 rounded-lg shadow">
+        {/* Use mode="modal" if you want to keep them on your page instead of redirecting */}
+        <SignInButton mode="modal">
+          <div className="weather-card cursor-pointer bg-black/20 backdrop-blur-sm p-2 w-20 rounded-lg shadow text-center">
             Login
-          </button>
+          </div>
         </SignInButton>
       </Show>
 
