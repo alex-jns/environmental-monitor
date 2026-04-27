@@ -37,8 +37,16 @@
                 } 
             });
 
+            app.MapPost("/api/weather", async (LocationRequest req) =>
+            {
+                Console.WriteLine("Received POST.");
+                return Results.Ok(await Monitor(req.Latitude, req.Longitude));
+            });
+
             app.Run();
         }
+
+        public record LocationRequest(double Latitude, double Longitude);
 
         /// <summary>
         /// The main mode of the program.

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Calls the backend API
 import { useApi } from "./ApiContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Styling and functionality for Clerk
 import "./App.css";
@@ -134,7 +134,7 @@ const InsideWeatherSummary = () => {
     <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8 px-6">
       <WeatherCard
         title="Inside Summary"
-        content={newWeatherData?.insideSummary}
+        content={newWeatherData?.data?.insideSummary}
       />
     </div>
   );
@@ -149,13 +149,13 @@ const InsideWeatherDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <WeatherCard
           title="Temperature"
-          content={`${formatTemp(newWeatherData?.message.temperatureF ?? 0)} °F
-          (${formatTemp(newWeatherData?.message.temperatureC ?? 0)} °C)`}
+          content={`${formatTemp(newWeatherData?.data?.message.temperatureF ?? 0)} °F
+          (${formatTemp(newWeatherData?.data?.message.temperatureC ?? 0)} °C)`}
         />
 
         <WeatherCard
           title="Humidity"
-          content={`${formatTemp(newWeatherData?.message.humidity ?? 0)}%`}
+          content={`${formatTemp(newWeatherData?.data?.message.humidity ?? 0)}%`}
         />
       </div>
     </div>
@@ -170,7 +170,7 @@ const OutsideWeatherSummary = () => {
     <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-2 px-6">
       <WeatherCard
         title="Outside Summary"
-        content={newWeatherData?.outsideSummary}
+        content={newWeatherData?.data?.outsideSummary}
       />
     </div>
   );
@@ -180,7 +180,7 @@ const OutsideWeatherSummary = () => {
 const WeatherIconDecider = () => {
   const newWeatherData = useApi();
 
-  switch (newWeatherData?.apiWeather.current.weather_name) {
+  switch (newWeatherData?.data?.apiWeather.current.weather_name) {
     // Clear skies
     case "Clear sky":
     case "Mainly clear":
@@ -262,46 +262,46 @@ const OutsideWeatherDashboard = () => {
       {/** Defines how the grid is structured for this component */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <WeatherCardWithIcon
-          content={newWeatherData?.apiWeather.current.weather_name}
+          content={newWeatherData?.data?.apiWeather.current.weather_name}
         />
 
         <WeatherCard
           title="Temperature"
-          content={`${formatTemp(newWeatherData?.apiWeather.current.temperature_2m_fahrenheit ?? 0)} °F
-          (${formatTemp(newWeatherData?.apiWeather.current.temperature_2m ?? 0)} °C)`}
+          content={`${formatTemp(newWeatherData?.data?.apiWeather.current.temperature_2m_fahrenheit ?? 0)} °F
+          (${formatTemp(newWeatherData?.data?.apiWeather.current.temperature_2m ?? 0)} °C)`}
         />
 
         <WeatherCard
           title="Feels Like"
-          content={`${formatTemp(newWeatherData?.apiWeather.current.apparent_temperature_fahrenheit ?? 0)} °F
-            (${formatTemp(newWeatherData?.apiWeather.current.apparent_temperature ?? 0)} °C)`}
+          content={`${formatTemp(newWeatherData?.data?.apiWeather.current.apparent_temperature_fahrenheit ?? 0)} °F
+            (${formatTemp(newWeatherData?.data?.apiWeather.current.apparent_temperature ?? 0)} °C)`}
         />
 
         <WeatherCard
           title="Humidity"
-          content={`${formatTemp(newWeatherData?.apiWeather.current.relative_humidity_2m ?? 0)}%`}
+          content={`${formatTemp(newWeatherData?.data?.apiWeather.current.relative_humidity_2m ?? 0)}%`}
         />
 
         <WeatherCard
           title="Daylight"
-          content={newWeatherData?.apiWeather.current.is_day_yesorno}
+          content={newWeatherData?.data?.apiWeather.current.is_day_yesorno}
         />
 
         <WeatherCard
           title="Cloudy"
-          content={`${newWeatherData?.apiWeather.current.cloud_cover}%`}
+          content={`${newWeatherData?.data?.apiWeather.current.cloud_cover}%`}
         />
 
         <WeatherCard
           title="Wind Speed"
-          content={`${newWeatherData?.apiWeather.current.wind_speed_10m} miles per hour`}
+          content={`${newWeatherData?.data?.apiWeather.current.wind_speed_10m} miles per hour`}
         />
 
         {/** Shows where the wind is coming from, not where it's going */}
         <WeatherCard
           title="Wind Direction"
-          content={`${newWeatherData?.apiWeather.current.wind_direction_10m_compass}
-            (${newWeatherData?.apiWeather.current.wind_direction_10m}°)`}
+          content={`${newWeatherData?.data?.apiWeather.current.wind_direction_10m_compass}
+            (${newWeatherData?.data?.apiWeather.current.wind_direction_10m}°)`}
         />
 
         {/** Conditional in case there is no precipitation */}
@@ -309,7 +309,7 @@ const OutsideWeatherDashboard = () => {
           title="Precipitation"
           content={
             // If precipitation is zero, say none, else show amount
-            newWeatherData?.apiWeather.current.precipitation === 0
+            newWeatherData?.data?.apiWeather.current.precipitation === 0
               ? "None"
               : `{weatherData.outside.precipitation} inches`
           }
@@ -318,7 +318,7 @@ const OutsideWeatherDashboard = () => {
         <WeatherCard
           title="Rain"
           content={
-            newWeatherData?.apiWeather.current.rain === 0
+            newWeatherData?.data?.apiWeather.current.rain === 0
               ? "None"
               : `{weatherData.outside.rain} inches`
           }
@@ -327,7 +327,7 @@ const OutsideWeatherDashboard = () => {
         <WeatherCard
           title="Showers"
           content={
-            newWeatherData?.apiWeather.current.showers === 0
+            newWeatherData?.data?.apiWeather.current.showers === 0
               ? "None"
               : `{weatherData.outside.showers} inches`
           }
@@ -336,7 +336,7 @@ const OutsideWeatherDashboard = () => {
         <WeatherCard
           title="Snowfall"
           content={
-            newWeatherData?.apiWeather.current.snowfall === 0
+            newWeatherData?.data?.apiWeather.current.snowfall === 0
               ? "None"
               : `{weatherData.outside.snowfall} inches`
           }
@@ -411,11 +411,82 @@ const WelcomeMessage = () => {
   );
 };
 
+/** Allows the user to input a latitude and longitude; saves to local storage */
+const LatitudeLongitudeInputBox = () => {
+  // Get the sendUserInput function from API context
+  const { sendUserInput } = useApi();
+
+  // State for latitude, initialized from localStorage if available
+  const [latitude, setLatitude] = useState(() => {
+    return localStorage.getItem("latitude") || ""; // Fallback to empty string if not found
+  });
+
+  // State for longitude, initialized from localStorage if available
+  const [longitude, setLongitude] = useState(() => {
+    return localStorage.getItem("longitude") || ""; // Fallback to empty string if not found
+  });
+
+  // Persist latitude to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("latitude", latitude);
+  }, [latitude]);
+
+  // Persist longitude to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("longitude", longitude);
+  }, [longitude]);
+
+  // Handle submit button click
+  const handleSubmit = () => {
+    // Send the current latitude and longitude to the API
+    sendUserInput(latitude, longitude);
+  };
+
+  return (
+    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8 px-6">
+      <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow py-6">
+        {/* header */}
+        <div className="text-center text-white mb-4">Select a Location</div>
+
+        {/* inputs */}
+        <div className="grid grid-cols-2 px-8 gap-8">
+          <input
+            type="text"
+            placeholder="Latitude"
+            value={latitude}
+            onChange={(e) => setLatitude(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+
+          <input
+            type="text"
+            placeholder="Longitude"
+            value={longitude}
+            onChange={(e) => setLongitude(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* button */}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleSubmit}
+            className="bg-purple-900 hover:bg-purple-700 text-white px-6 py-2 rounded"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /** Represents the weather page. */
 const Weather = () => {
   return (
     <div>
       <WelcomeMessage />
+      <LatitudeLongitudeInputBox />
       <InsideWeatherSummary />
       <InsideWeatherDashboard />
       <OutsideWeatherSummary />
