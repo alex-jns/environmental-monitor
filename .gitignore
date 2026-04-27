@@ -14,3 +14,5 @@ frontend/.vite
 frontend/.env
 frontend/.env.*
 frontend/.DS_Store
+
+node_modules/
