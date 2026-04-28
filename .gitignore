@@ -15,4 +15,8 @@ frontend/.env
 frontend/.env.*
 frontend/.DS_Store
 
+# npm install these
 node_modules/
+
+# etc
+shortcut.lnk
