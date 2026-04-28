@@ -42,6 +42,9 @@ type ApiResponse = {
       temperature_2m_min_fahrenheit: number;
       precipitation_probability_max: number[];
     };
+
+    latitude: string;
+    longitude: string;
   };
 
   // Extra information

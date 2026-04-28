@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using EnvironmentalMonitorAPI;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -319,7 +320,7 @@ namespace Environmental_Monitor
         /// User provides a date range from available reports to create a unified report.
         /// Shows the change in the tracked variables over the specified time period.
         /// </summary>
-        public static void GenerateMontlyReport()
+        public static MonthlyReport? GenerateMonthlyReport(string? startDate, string? endDate)
         {
             Logger logger = new Logger("logs/report.log");
 
@@ -327,7 +328,7 @@ namespace Environmental_Monitor
             if (!Directory.Exists(reportsDir))
             {
                 logger.Info("No reports directory found for monthly report.");
-                return;
+                return null;
             }
 
             // Check if we have a monthly reports direct
@@ -342,66 +343,74 @@ namespace Environmental_Monitor
             if (jsonFiles.Length == 0)
             {
                 logger.Info("No JSON reports found to include in monthly report.");
-                return;
+                return null;
             }
 
             // Show the user the earliest available report date for reference when entering the start date
             string earliestReportDate = CheckEarliestReportDate(jsonFiles);
 
-            // Prompt the user to enter a start date for the report, with the option to use the earliest available report if they just press Enter
-            Console.WriteLine("Enter start date (yyyy-MM-dd) or press Enter for earliest:");
-            string? startInput = Console.ReadLine();
-            DateTime? startDate = null;
-            if (!string.IsNullOrWhiteSpace(startInput))
+            DateTime? startingDate = null;
+
+            if (!string.IsNullOrWhiteSpace(startDate))
             {
                 // Try to parse the user input for the start date, if it's invalid log that and exit, otherwise assign it to the startDate variable
-                if (DateTime.TryParse(startInput, out var s)) startDate = s.Date;
-                else
-                {
-                    Console.WriteLine("Invalid start date format.");
-                    return;
-                }
+                if (DateTime.TryParse(startDate, out var s)) startingDate = s.Date;
 
                 // Convert the earliest report date from the file name to a DateTime for comparison
                 DateTime availableDate;
 
                 // If parse is successful and the user provided start date is earlier than the earliest available report date, adjust the start date to the earliest available report date
-                if (DateTime.TryParse(earliestReportDate, out availableDate) && startDate < availableDate)
+                if (DateTime.TryParse(earliestReportDate, out availableDate) && startingDate < availableDate)
                 {
-                    Console.WriteLine($"Start date is earlier than the earliest available report date ({availableDate:yyyy-MM-dd}). Adjusting start date to {availableDate:yyyy-MM-dd}.");
+                    logger.Info($"Start date is earlier than the earliest available report date ({availableDate:yyyy-MM-dd}). Adjusting start date to {availableDate:yyyy-MM-dd}.");
 
                     // This sets the start date to the beginning of the day of the earliest available report date, since we want to include that entire day in the report
-                    startDate = availableDate;
+                    startingDate = availableDate;
+                }
+                // If it's later than the latest available report, adjust to earliest.
+                else if (startingDate > availableDate)
+                {
+                    logger.Info("Start date is later than what is available. Setting to earliest.");
+                    startingDate = availableDate;
+                }
+                else
+                {
+                    logger.Info("Could not parse user input, defaulting to earliest available report date.");
+                    startingDate = availableDate;
                 }
             }
 
             // Show the user the latest available report date for reference when entering the end date
             string latestReportDate = CheckLatestReportDate(jsonFiles);
 
-            // Prompt the user to enter an end date for the report, with the option to use the latest available report if they just press Enter
-            Console.WriteLine("Enter end date (yyyy-MM-dd) or press Enter for latest:");
-            string? endInput = Console.ReadLine();
-            DateTime? endDate = null;
-            if (!string.IsNullOrWhiteSpace(endInput))
+            DateTime? endingDate = null;
+
+            if (!string.IsNullOrWhiteSpace(endDate))
             {
                 // Try to parse the user input for the end date, if it's invalid log that and exit, otherwise assign it to the endDate variable
-                if (DateTime.TryParse(endInput, out var e)) endDate = e.Date.AddDays(1).AddTicks(-1);
-                else
-                {
-                    Console.WriteLine("Invalid end date format.");
-                    return;
-                }
+                if (DateTime.TryParse(endDate, out var e)) endingDate = e.Date.AddDays(1).AddTicks(-1);
 
                 // Just like before, we need to parse the date
                 DateTime availableDate;
 
                 // If parse is successful and the user provided end date is later than the latest available report date, adjust the end date to the latest available report date
-                if (DateTime.TryParse(latestReportDate, out availableDate) && endDate > availableDate)
+                if (DateTime.TryParse(latestReportDate, out availableDate) && endingDate > availableDate)
                 {
-                    Console.WriteLine($"End date is later than the latest available report date ({availableDate:yyyy-MM-dd}). Adjusting end date to {availableDate:yyyy-MM-dd}.");
+                    logger.Info($"End date is later than the latest available report date ({availableDate:yyyy-MM-dd}). Adjusting end date to {availableDate:yyyy-MM-dd}.");
 
                     // This sets the end date to the end of the day of the latest available report date, since we want to include that entire day in the report
-                    endDate = availableDate.Date.AddDays(1).AddTicks(-1); 
+                    endingDate = availableDate.Date.AddDays(1).AddTicks(-1); 
+                }
+                // If it's earlier than the earliest available report, adjust to latest.
+                else if (endingDate < availableDate)
+                {
+                    logger.Info("End date is earlier than the latest available report date. Setting to latest.");
+                    endingDate = availableDate.Date.AddDays(1).AddTicks(-1);
+                }
+                else
+                {
+                    logger.Info("Could not parse user input, defaulting to latest available report date.");
+                    endingDate = availableDate;
                 }
             }
 
@@ -428,29 +437,29 @@ namespace Environmental_Monitor
                         }
 
                         // Apply date filters if provided
-                        if (startDate.HasValue && deserializedReport.measurementTime < startDate.Value.ToUniversalTime()) continue;
-                        if (endDate.HasValue && deserializedReport.measurementTime > endDate.Value.ToUniversalTime()) continue;
+                        if (startingDate.HasValue && deserializedReport.measurementTime < startingDate.Value.ToUniversalTime()) continue;
+                        if (endingDate.HasValue && deserializedReport.measurementTime > endingDate.Value.ToUniversalTime()) continue;
 
                         reports.Add(deserializedReport);
                     }
                 }
-                catch (ArgumentException ex) { logger.Error($"Invalid path for JSON report: {ex.Message}"); return; }
-                catch (IOException ex) { logger.Error($"IO error reading JSON report: {ex.Message}"); return; }
-                catch (JsonException ex)  { logger.Error($"JSON deserialization error: {ex.Message}"); return; }
-                catch (UnauthorizedAccessException ex) { logger.Error($"Access denied trying to read JSON report: {ex.Message}"); return; }
-                catch (NotSupportedException ex) { logger.Error($"Unsupported path for JSON report: {ex.Message}"); return; }
-                catch (Exception ex) { logger.Error($"Failed to read JSON report: {ex.Message}"); return; }
+                catch (ArgumentException ex) { logger.Error($"Invalid path for JSON report: {ex.Message}"); return null; }
+                catch (IOException ex) { logger.Error($"IO error reading JSON report: {ex.Message}"); return null; }
+                catch (JsonException ex)  { logger.Error($"JSON deserialization error: {ex.Message}"); return null; }
+                catch (UnauthorizedAccessException ex) { logger.Error($"Access denied trying to read JSON report: {ex.Message}"); return null; }
+                catch (NotSupportedException ex) { logger.Error($"Unsupported path for JSON report: {ex.Message}"); return null; }
+                catch (Exception ex) { logger.Error($"Failed to read JSON report: {ex.Message}"); return null; }
             }
 
             if (reports.Count == 0)
             {
                 logger.Info("No reports matched the specified date range.");
-                return;
+                return null;
             }
 
             // Use the provided start and end dates for the report labels, if they are not provided use "earliest" and "latest" as appropriate
-            string startLabel = startDate?.ToString("yyyy-MM-dd") ?? "earliest";
-            string endLabel = endDate?.ToString("yyyy-MM-dd") ?? "latest";
+            string startLabel = startingDate?.ToString("yyyy-MM-dd") ?? "earliest";
+            string endLabel = endingDate?.ToString("yyyy-MM-dd") ?? "latest";
 
             // String builder is always good for appending lines
             var sb = new StringBuilder();
@@ -511,23 +520,23 @@ namespace Environmental_Monitor
 
             // Try to catch file I/O exceptions when writing the report, log any errors that occur
             try { File.WriteAllText(outPath, sb.ToString()); }
-            catch (ArgumentException ex) { logger.Error($"Invalid path for monthly report: {ex.Message}"); return; }
-            catch (IOException ex) { logger.Error($"IO error writing monthly report: {ex.Message}"); return; }
-            catch (UnauthorizedAccessException ex) { logger.Error($"Access denied writing monthly report: {ex.Message}"); return; }
-            catch (NotSupportedException ex) { logger.Error($"Unsupported path for monthly report: {ex.Message}"); return; }
-            catch (Exception ex) { logger.Error($"Failed to write monthly report: {ex.Message}"); return; }
-
+            catch (ArgumentException ex) { logger.Error($"Invalid path for monthly report: {ex.Message}"); return null; }
+            catch (IOException ex) { logger.Error($"IO error writing monthly report: {ex.Message}"); return null; }
+            catch (UnauthorizedAccessException ex) { logger.Error($"Access denied writing monthly report: {ex.Message}"); return null; }
+            catch (NotSupportedException ex) { logger.Error($"Unsupported path for monthly report: {ex.Message}"); return null; }
+            catch (Exception ex) { logger.Error($"Failed to write monthly report: {ex.Message}"); return null; }
             logger.Info($"Wrote monthly report: {outPath}");
             Console.WriteLine(sb.ToString());
 
             string monthlyReportFilePath = "monthly/latest_monthly.json";
 
-            var monthlyReportObject = new
+            // Create the monthly report object
+            MonthlyReport monthlyReport = new MonthlyReport
             {
                 starting_date = startLabel,
                 ending_date = endLabel,
                 sample_count = reports.Count,
-                inside = new
+                inside = new MonthlyInside
                 {
                     starting_temperatureF = reports.First().inside.temperatureF,
                     starting_temperatureC = reports.First().inside.temperatureC,
@@ -542,7 +551,7 @@ namespace Environmental_Monitor
                     average_temperatureC = avgInsideC,
                     average_humidity = avgInsideHumidity
                 },
-                outside = new
+                outside = new MonthlyOutside
                 {
                     starting_temperatureF = reports.First().outside.temperature_2m_fahrenheit,
                     starting_temperatureC = reports.First().outside.temperature_2m,
@@ -562,14 +571,17 @@ namespace Environmental_Monitor
             var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
 
             // Try to catch file I/O exceptions when writing the JSON report, log any errors that occur
-            try { File.WriteAllText(monthlyReportFilePath, JsonSerializer.Serialize(monthlyReportObject, jsonOptions)); }
-            catch (ArgumentException ex) { logger.Error($"Invalid path for monthly report: {ex.Message}"); return; }
-            catch (IOException ex) { logger.Error($"IO error writing monthly report: {ex.Message}"); return; }
-            catch (UnauthorizedAccessException ex) { logger.Error($"Access denied writing monthly report: {ex.Message}"); return; }
-            catch (NotSupportedException ex) { logger.Error($"Unsupported path for monthly report: {ex.Message}"); return; }
-            catch (Exception ex) { logger.Error($"Failed to write monthly report: {ex.Message}"); return; }
+            try { File.WriteAllText(monthlyReportFilePath, JsonSerializer.Serialize(monthlyReport, jsonOptions)); }
+
+            catch (ArgumentException ex) { logger.Error($"Invalid path for monthly report: {ex.Message}"); return null; }
+            catch (IOException ex) { logger.Error($"IO error writing monthly report: {ex.Message}"); return null; }
+            catch (UnauthorizedAccessException ex) { logger.Error($"Access denied writing monthly report: {ex.Message}"); return null; }
+            catch (NotSupportedException ex) { logger.Error($"Unsupported path for monthly report: {ex.Message}"); return null; }
+            catch (Exception ex) { logger.Error($"Failed to write monthly report: {ex.Message}"); return null; }
 
             logger.Info($"Wrote JSON report to {monthlyReportFilePath}");
+
+            return monthlyReport;
         }
 
         /// <summary>

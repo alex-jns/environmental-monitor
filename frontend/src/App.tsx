@@ -8,9 +8,13 @@ import { useState, useEffect } from "react";
 // Styling and functionality for Clerk
 import "./App.css";
 import { Show, SignInButton, UserButton, useUser } from "@clerk/react";
+import { MonthlyReportProvider, useMonthlyReport } from "./ReportContext";
 
-/** Formats temperatures to be no more than 2 decimals and no trailing zeroes. */
-const formatTemp = (temp: number) => parseFloat(temp.toFixed(2)).toString();
+/** Formats temperatures; handles undefined/null safely */
+const formatTemp = (temp: number | undefined | null) => {
+  if (temp === undefined || temp === null) return "--";
+  return parseFloat(temp.toFixed(2)).toString();
+};
 
 /** Top navigation bar. */
 const NavBar = () => {
@@ -341,6 +345,16 @@ const OutsideWeatherDashboard = () => {
               : `{weatherData.outside.snowfall} inches`
           }
         />
+
+        <WeatherCard
+          title="Latitude"
+          content={newWeatherData?.data?.apiWeather.latitude}
+        />
+
+        <WeatherCard
+          title="Longitude"
+          content={newWeatherData?.data?.apiWeather.longitude}
+        />
       </div>
     </div>
   );
@@ -498,65 +512,84 @@ const Weather = () => {
 
 /** Title card for the report page. */
 const ReportTitle = () => {
+  const reportData = useMonthlyReport();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mt-6">
       <WeatherCard
         title="Monthly Report"
-        content={`Showing report for ${reportData.starting_date}
-        to ${reportData.ending_date} with ${reportData.sample_count} samples.`}
+        content={`Showing report for ${reportData?.report?.starting_date}
+        to ${reportData?.report?.ending_date} with ${reportData?.report?.sample_count} samples.`}
       />
+    </div>
+  );
+};
+
+/** Shows the dates selected for the data */
+const DateRangeDisplay = () => {
+  const reportData = useMonthlyReport();
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+      <WeatherCard
+        title="Start Date"
+        content={reportData?.report?.starting_date}
+      />
+      <WeatherCard title="End Date" content={reportData?.report?.ending_date} />
     </div>
   );
 };
 
 /** Dashboard for the inside weather report. */
 const ReportInside = () => {
+  const reportData = useMonthlyReport();
+
   return (
     <div>
       <h2 className="pt-6">Inside</h2>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <WeatherCard
           title="Starting Temperature"
-          content={`${formatTemp(reportData.inside.starting_temperatureF)} °F
-          (${formatTemp(reportData.inside.starting_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.inside?.starting_temperatureF)} °F
+          (${formatTemp(reportData?.report?.inside?.starting_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Starting Humidity"
-          content={`${formatTemp(reportData.inside.starting_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.inside?.starting_humidity)}%`}
         />
 
         <WeatherCard
           title="Ending Temperature"
-          content={`${formatTemp(reportData.inside.ending_temperatureF)} °F
-          (${formatTemp(reportData.inside.ending_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.inside?.ending_temperatureF)} °F
+          (${formatTemp(reportData?.report?.inside?.ending_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Ending Humidity"
-          content={`${formatTemp(reportData.inside.ending_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.inside?.ending_humidity)}%`}
         />
 
         <WeatherCard
           title="Temperature Delta"
-          content={`${formatTemp(reportData.inside.delta_temperatureF)} °F
-          (${formatTemp(reportData.inside.delta_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.inside?.delta_temperatureF)} °F
+          (${formatTemp(reportData?.report?.inside?.delta_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Humidity Delta"
-          content={`${formatTemp(reportData.inside.delta_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.inside?.delta_humidity)}%`}
         />
 
         <WeatherCard
           title="Average Temperature"
-          content={`${formatTemp(reportData.inside.average_temperatureF)} °F
-          (${formatTemp(reportData.inside.average_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.inside?.average_temperatureF)} °F
+          (${formatTemp(reportData?.report?.inside?.average_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Average Humidity"
-          content={`${formatTemp(reportData.inside.average_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.inside?.average_humidity)}%`}
         />
       </div>
     </div>
@@ -565,6 +598,8 @@ const ReportInside = () => {
 
 /** Dashboard for the outside weather report. */
 const ReportOutside = () => {
+  const reportData = useMonthlyReport();
+
   return (
     <div>
       <h2 className="pt-6">Outside</h2>
@@ -572,47 +607,121 @@ const ReportOutside = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <WeatherCard
           title="Starting Temperature"
-          content={`${formatTemp(reportData.outside.starting_temperatureF)} °F
-          (${formatTemp(reportData.outside.starting_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.outside?.starting_temperatureF)} °F
+          (${formatTemp(reportData?.report?.outside?.starting_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Starting Humidity"
-          content={`${formatTemp(reportData.outside.starting_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.outside?.starting_humidity)}%`}
         />
 
         <WeatherCard
           title="Ending Temperature"
-          content={`${formatTemp(reportData.outside.ending_temperatureF)} °F
-          (${formatTemp(reportData.outside.ending_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.outside?.ending_temperatureF)} °F
+          (${formatTemp(reportData?.report?.outside?.ending_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Ending Humidity"
-          content={`${formatTemp(reportData.outside.ending_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.outside?.ending_humidity)}%`}
         />
 
         <WeatherCard
           title="Temperature Delta"
-          content={`${formatTemp(reportData.outside.delta_temperatureF)} °F
-          (${formatTemp(reportData.outside.delta_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.outside?.delta_temperatureF)} °F
+          (${formatTemp(reportData?.report?.outside?.delta_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Humidity Delta"
-          content={`${formatTemp(reportData.outside.delta_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.outside?.delta_humidity)}%`}
         />
 
         <WeatherCard
           title="Average Temperature"
-          content={`${formatTemp(reportData.outside.average_temperatureF)} °F
-          (${formatTemp(reportData.outside.average_temperatureC)} °C)`}
+          content={`${formatTemp(reportData?.report?.outside?.average_temperatureF)} °F
+          (${formatTemp(reportData?.report?.outside?.average_temperatureC)} °C)`}
         />
 
         <WeatherCard
           title="Average Humidity"
-          content={`${formatTemp(reportData.outside.average_humidity)}%`}
+          content={`${formatTemp(reportData?.report?.outside?.average_humidity)}%`}
         />
+      </div>
+    </div>
+  );
+};
+
+/** Allows the user to input a start and end date; stored in local storage */
+const ReportInputBox = () => {
+  // Get the sendUserInput function from API context
+  const { generateMonthlyReport } = useMonthlyReport();
+
+  // State for latitude, initialized from localStorage if available
+  const [startDate, setStartDate] = useState(() => {
+    return localStorage.getItem("report_start_date") || ""; // Fallback to empty string if not found
+  });
+
+  // State for longitude, initialized from localStorage if available
+  const [endDate, setEndDate] = useState(() => {
+    return localStorage.getItem("report_end_date") || ""; // Fallback to empty string if not found
+  });
+
+  // Persist latitude to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("report_start_date", startDate);
+  }, [startDate]);
+
+  // Persist longitude to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("report_end_date", endDate);
+  }, [endDate]);
+
+  // Handle submit button click
+  const handleSubmit = () => {
+    if (startDate && endDate) {
+      // Trigger the POST request through the context
+      generateMonthlyReport(startDate, endDate);
+    } else {
+      alert("Please select both a start and end date.");
+    }
+  };
+
+  return (
+    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8 px-6">
+      <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow py-6">
+        {/* header */}
+        <div className="text-center text-white mb-4">Select a Date Range</div>
+
+        {/* inputs */}
+        <div className="grid grid-cols-2 px-8 gap-8">
+          <input
+            type="text"
+            placeholder="Start Date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+
+          <input
+            type="text"
+            placeholder="End Date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+
+        {/* button */}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleSubmit}
+            className="bg-purple-900 hover:bg-purple-700 text-white px-6 py-2 rounded"
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -621,11 +730,15 @@ const ReportOutside = () => {
 /** Represents the report page. */
 const Report = () => {
   return (
-    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-2 pb-6 px-6">
-      <ReportTitle />
-      <ReportInside />
-      <ReportOutside />
-    </div>
+    <MonthlyReportProvider>
+      <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-2 pb-6 px-6">
+        <ReportInputBox />
+        <ReportTitle />
+        <DateRangeDisplay />
+        <ReportInside />
+        <ReportOutside />
+      </div>
+    </MonthlyReportProvider>
   );
 };
 

@@ -20,3 +20,4 @@ node_modules/
 
 # etc
 shortcut.lnk
+/backend/monthly
