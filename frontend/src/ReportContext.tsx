@@ -35,26 +35,33 @@ interface ReportContextType {
   refresh?: () => Promise<void>;
 }
 
-// --- Context Definition ---
+/** Initializes the context with a default value of null */
 const MonthlyReportContext = createContext<ReportContextType | null>(null);
 
+/** Component that wraps around the app to provide the data (use <MonthlyReportProvider>) */
 export function MonthlyReportProvider({
-  children,
+  children, // Represents the components nested inside this provider
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode; // Type definition for child elements
 }) {
+  // Holds the report data retrieved from the API
   const [report, setReport] = useState<MonthlyReport | null>(null);
+
+  // Is loading or not
   const [loading, setLoading] = useState<boolean>(false);
+
+  // For errors
   const [error, setError] = useState<string | null>(null);
 
+  // Run when component loads
   useEffect(() => {
-    setLoading(true);
-    fetch("/api/reports/latest-monthly")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setReport(data))
-      .catch(() => setError("Could not load initial report"))
-      .finally(() => setLoading(false));
-  }, []);
+    setLoading(true); // Start loading
+    fetch("/api/reports") // GET request to backend
+      .then((res) => (res.ok ? res.json() : null)) // Convert to JSON
+      .then((data) => setReport(data)) // Update the state
+      .catch(() => setError("Could not load initial report.")) // Catch error
+      .finally(() => setLoading(false)); // Finish
+  }, []); // Run only once
 
   /** Sends POST request to trigger the C# GenerateMonthlyReport method. */
   const generateMonthlyReport = async (startDate: string, endDate: string) => {
@@ -62,24 +69,28 @@ export function MonthlyReportProvider({
     setError(null);
 
     try {
+      // Send date range to POST endpoint
       const res = await fetch("/api/report", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ startDate, endDate }),
+        headers: { "Content-Type": "application/json" }, // Send JSON to backend
+        body: JSON.stringify({ startDate, endDate }), // Serialize JSON
       });
 
+      // If API errors out (error code) throw exception and catch
       if (!res.ok) throw new Error(`Generation failed: ${res.statusText}`);
 
       // Parse the MonthlyReport returned by the C# method
       const result: MonthlyReport = await res.json();
-      setReport(result);
+      setReport(result); // Save to state
     } catch (err) {
+      // Error catch
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setLoading(false);
+      setLoading(false); // Finish
     }
   };
 
+  // Update context with new states
   return (
     <MonthlyReportContext.Provider
       value={{ report, loading, error, generateMonthlyReport }}
@@ -89,7 +100,7 @@ export function MonthlyReportProvider({
   );
 }
 
-// --- Custom Hook ---
+// Provide context to the components that need it
 export function useMonthlyReport() {
   const context = useContext(MonthlyReportContext);
   if (!context) {

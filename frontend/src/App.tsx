@@ -756,9 +756,6 @@ const About = () => {
       {/* Title Section */}
       <div className="max-w-5xl mx-auto text-center mb-10">
         <h1 className="text-4xl font-bold mb-4">Meet the Developers</h1>
-        <p className="text-gray-300">
-          College Students from Northeast State Community College
-        </p>
       </div>
 
       {/* Main Content Section */}
@@ -787,32 +784,50 @@ const About = () => {
           <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow text-center">
             <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center">
               {/* Replace with <img src="/your-image.jpg" /> */}
-              <span className="text-gray-400">Image</span>
+              <span className="text-gray-400">
+                <img
+                  src="https://avatars.githubusercontent.com/u/159482010?v=4"
+                  className="rounded-full object-cover"
+                />
+              </span>
             </div>
             <h3 className="text-xl font-semibold">Alexander Jones</h3>
             <p className="text-gray-400">Backend Developer</p>
             <p className="text-gray-400">Likes to play video games.</p>
-            <p className="text-gray-400">
-              <a href="https://github.com/alex-jns" target="_blank">
+
+            <a href="https://github.com/alex-jns" target="_blank">
+              <button
+                className="bg-purple-900 hover:bg-purple-700 text-white px-6 py-2 rounded"
+                style={{ cursor: "pointer" }}
+              >
                 GitHub
-              </a>
-            </p>
+              </button>
+            </a>
           </div>
 
           {/* Person 2 */}
           <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow text-center">
             <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center">
               {/* Replace with <img src="/your-image.jpg" /> */}
-              <span className="text-gray-400">Image</span>
+              <span className="text-gray-400">
+                <img
+                  src="https://avatars.githubusercontent.com/u/128431085?v=4"
+                  className="rounded-full object-cover"
+                />
+              </span>
             </div>
             <h3 className="text-xl font-semibold">Thomas Goddard</h3>
             <p className="text-gray-400">Frontend Developer</p>
             <p className="text-gray-400">Video game enthusiast.</p>
-            <p className="text-gray-400">
-              <a href="https://github.com/Flexproc" target="_blank">
+
+            <a href="https://github.com/Flexproc" target="_blank">
+              <button
+                className="bg-purple-800 hover:bg-purple-700 text-white px-6 py-2 rounded"
+                style={{ cursor: "pointer" }}
+              >
                 GitHub
-              </a>
-            </p>
+              </button>
+            </a>
           </div>
         </div>
       </div>
