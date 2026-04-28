@@ -4,6 +4,14 @@ A fullstack monorepo with a C# ASP.NET backend and a React frontend built with V
 
 Merged from the [backend](https://github.com/alex-jns/environmental-monitor-backend) and [frontend](https://github.com/alex-jns/environmental-monitor-frontend) repositories.
 
+## Todo
+
+- Finish the README
+- Add images to the "About" page
+- Verify accessibility requirements
+- Create a presentation
+- Credits for image: https://www.pexels.com/photo/red-clouds-and-sky-at-dusk-18713933/
+
 ## Overview
 
 Collects, stores, and analyzes environmental sensor data such as temperature and humidity from a preconfigured Raspberry Pi. Compares the data to OpenMeteo API weather given a latitude and longitude and generates historical reports. Presents this information to the user through a user friendly website for at-a-glance updates.
@@ -25,7 +33,4 @@ Collects, stores, and analyzes environmental sensor data such as temperature and
 
 ## Quick Start
 
-TBD
-3. Verify that the OpenMeteo API is accessible and that the API parameters (latitude, longitude, time zone) are correctly configured.
-4. Ensure that the time interval and time range inputs are valid and in the correct format.
-5. Check for any file I/O issues when writing JSON files or generating reports, such as permission issues or insufficient disk space.
+TBD 3. Verify that the OpenMeteo API is accessible and that the API parameters (latitude, longitude, time zone) are correctly configured. 4. Ensure that the time interval and time range inputs are valid and in the correct format. 5. Check for any file I/O issues when writing JSON files or generating reports, such as permission issues or insufficient disk space.

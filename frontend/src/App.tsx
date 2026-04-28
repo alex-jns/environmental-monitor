@@ -109,7 +109,7 @@ const NavBarRight = () => {
 const Banner = () => {
   return (
     <div className="flex items-center justify-center h-40 banner-bg">
-      <h1 className="header-text pt-12">Environmental Monitor App</h1>
+      <h1 className="header-text pt-12">Environmental Monitor</h1>
     </div>
   );
 };
@@ -416,9 +416,7 @@ const WelcomeMessage = () => {
       <Show when="signed-in">
         <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow">
           <p className="text-sm text-white">Welcome back, {user?.firstName}</p>
-          <h2 className="text-2xl font-bold">
-            Here's your weather forecast for Bristol, TN
-          </h2>
+          <LatitudeLongitudeInputBox />
         </div>
       </Show>
     </div>
@@ -457,13 +455,16 @@ const LatitudeLongitudeInputBox = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8 px-6">
-      <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow py-6">
+    <div>
+      <div>
         {/* header */}
         <div className="text-center text-white mb-4">Select a Location</div>
 
         {/* inputs */}
         <div className="grid grid-cols-2 px-8 gap-8">
+          <label>Latitude:</label>
+          <label>Longitude:</label>
+
           <input
             type="text"
             placeholder="Latitude"
@@ -500,7 +501,6 @@ const Weather = () => {
   return (
     <div>
       <WelcomeMessage />
-      <LatitudeLongitudeInputBox />
       <InsideWeatherSummary />
       <InsideWeatherDashboard />
       <OutsideWeatherSummary />
@@ -689,13 +689,20 @@ const ReportInputBox = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8 px-6">
+    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] pt-8">
       <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow py-6">
         {/* header */}
         <div className="text-center text-white mb-4">Select a Date Range</div>
+        <p>Input a date to start creating a report and an ending date.</p>
+        <p>
+          If no date is provided, it will default to the earliest and latest
+          possible dates.
+        </p>
 
         {/* inputs */}
         <div className="grid grid-cols-2 px-8 gap-8">
+          <label>Starting Date:</label>
+          <label>Ending Date:</label>
           <input
             type="text"
             placeholder="Start Date"
@@ -744,7 +751,73 @@ const Report = () => {
 
 /** Represents the about page. */
 const About = () => {
-  return <div></div>;
+  return (
+    <div className="bg-gradient-to-r from-slate-900 to-[#60298E] min-h-screen px-6 pt-4">
+      {/* Title Section */}
+      <div className="max-w-5xl mx-auto text-center mb-10">
+        <h1 className="text-4xl font-bold mb-4">Meet the Developers</h1>
+        <p className="text-gray-300">
+          College Students from Northeast State Community College
+        </p>
+      </div>
+
+      {/* Main Content Section */}
+      <div className="max-w-5xl mx-auto">
+        <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Overview</h2>
+          <p className="text-gray-300">
+            This website was created as a capstone project for Northeast State
+            Community College during the Spring semester of 2026.
+          </p>
+        </div>
+
+        <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Details</h2>
+          <p className="text-gray-300">
+            This website is powered by a C# ASP.NET backend alongside a React
+            frontend using Vite.
+          </p>
+        </div>
+      </div>
+
+      {/* Team Section */}
+      <div className="max-w-5xl mx-auto mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-10">
+          {/* Person 1 */}
+          <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow text-center">
+            <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center">
+              {/* Replace with <img src="/your-image.jpg" /> */}
+              <span className="text-gray-400">Image</span>
+            </div>
+            <h3 className="text-xl font-semibold">Alexander Jones</h3>
+            <p className="text-gray-400">Backend Developer</p>
+            <p className="text-gray-400">Likes to play video games.</p>
+            <p className="text-gray-400">
+              <a href="https://github.com/alex-jns" target="_blank">
+                GitHub
+              </a>
+            </p>
+          </div>
+
+          {/* Person 2 */}
+          <div className="weather-card bg-black/20 backdrop-blur-sm p-6 rounded-lg shadow text-center">
+            <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gray-700 flex items-center justify-center">
+              {/* Replace with <img src="/your-image.jpg" /> */}
+              <span className="text-gray-400">Image</span>
+            </div>
+            <h3 className="text-xl font-semibold">Thomas Goddard</h3>
+            <p className="text-gray-400">Frontend Developer</p>
+            <p className="text-gray-400">Video game enthusiast.</p>
+            <p className="text-gray-400">
+              <a href="https://github.com/Flexproc" target="_blank">
+                GitHub
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 /** Main function of the app. */
