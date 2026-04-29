@@ -1,4 +1,4 @@
-# Environmental Monitor Backend (wip)
+# Environmental Monitor (wip)
 
 A fullstack monorepo with a C# ASP.NET backend and a React frontend built with Vite.
 
