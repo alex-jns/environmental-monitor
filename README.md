@@ -33,4 +33,56 @@ Collects, stores, and analyzes environmental sensor data such as temperature and
 
 ## Quick Start
 
-TBD 3. Verify that the OpenMeteo API is accessible and that the API parameters (latitude, longitude, time zone) are correctly configured. 4. Ensure that the time interval and time range inputs are valid and in the correct format. 5. Check for any file I/O issues when writing JSON files or generating reports, such as permission issues or insufficient disk space.
+1. Clone the repository
+
+2. Add environmental variables
+
+3. Run the batch file
+
+## Manual Start
+
+1. Install dependencies
+
+```bash
+npm install
+cd frontend
+npm install
+cd ..
+```
+
+2. Set up backend
+
+```bash
+cd backend
+dotnet restore
+cd ..
+```
+3. Run the frontend
+
+```bash
+cd frontend
+npm run dev
+```
+
+## Usage
+
+Upon starting the backend, endpoints are available at:
+
+```
+http://localhost:52623/api/weather
+```
+
+```
+http://localhost:52623/api/reports
+```
+
+The frontend can be viewed from:
+
+```
+http://localhost:5173/
+```
+
+## Credits
+
+Background image by Rodion Kutsaiev at [Pexels.com](https://www.pexels.com/photo/red-clouds-and-sky-at-dusk-18713933/)
+Weather icons provided by [Flaticon.com](https://www.flaticon.com/free-icons/weather)
