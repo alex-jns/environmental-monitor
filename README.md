@@ -34,7 +34,7 @@ git clone https://github.com/alex-jns/environmental-monitor.git
 cd environmental-monitor
 ```
 
-3. Add environmental variables
+2. Add environmental variables
 
 Create a ".env.local" file in the /frontend directory and add the key from [Clerk](https://clerk.com/) for authentication:
 
@@ -42,7 +42,7 @@ Create a ".env.local" file in the /frontend directory and add the key from [Cler
 VITE_CLERK_PUBLISHABLE_KEY=your-key-here
 ```
 
-5. Run the batch file
+3. Run the batch file
 
 Navigate to the root folder and double click the "run.bat" file.
 
@@ -101,8 +101,11 @@ The about page provides a short summary of the project and its developers.
 ## Credits
 
 Background image by Rodion Kutsaiev at [Pexels.com](https://www.pexels.com/photo/red-clouds-and-sky-at-dusk-18713933/)
+
 Weather icons provided by [Flaticon.com](https://www.flaticon.com/free-icons/weather)
+
 Authentication provided by [Clerk.com](https://clerk.com/)
+
 This project utilizes [TailwindCSS](https://tailwindcss.com/)
 
 ## License
