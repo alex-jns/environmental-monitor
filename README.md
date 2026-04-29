@@ -7,10 +7,8 @@ Merged from the [backend](https://github.com/alex-jns/environmental-monitor-back
 ## Todo
 
 - Finish the README
-- Add images to the "About" page
 - Verify accessibility requirements
 - Create a presentation
-- Credits for image: https://www.pexels.com/photo/red-clouds-and-sky-at-dusk-18713933/
 
 ## Overview
 
@@ -26,10 +24,6 @@ Collects, stores, and analyzes environmental sensor data such as temperature and
 - **User Friendly Interface** — Presents information to the user in an easy-to-use website.
 - **Changes Location** — Provide a latitude and longitude to get weather from somewhere else in the world.
 - **Save Personal Settings** — Register and login to save your often used locations.
-
-## Requirements
-
-- Windows 10 or later (64-bit)
 
 ## Quick Start
 
@@ -89,7 +83,8 @@ http://localhost:52623/api/weather
 http://localhost:52623/api/reports
 ```
 
-Endpoints are used for POST but can receive GET requests. If no query parameters are given, it will provide default values.
+> Endpoints are used for POST but can receive GET requests.
+> If no query parameters are given, it will provide default values.
 
 The frontend can be viewed from:
 
