@@ -35,9 +35,22 @@ Collects, stores, and analyzes environmental sensor data such as temperature and
 
 1. Clone the repository
 
-2. Add environmental variables
+```
+git clone https://github.com/alex-jns/environmental-monitor.git
+cd environmental-monitor
+```
 
-3. Run the batch file
+3. Add environmental variables
+
+Create a ".env.local" file in the /frontend directory and add the key from [Clerk](https://clerk.com/) for authentication:
+
+```
+VITE_CLERK_PUBLISHABLE_KEY=your-key-here
+```
+
+5. Run the batch file
+
+Navigate to the root folder and double click the "run.bat" file.
 
 ## Manual Start
 
@@ -76,13 +89,27 @@ http://localhost:52623/api/weather
 http://localhost:52623/api/reports
 ```
 
+Endpoints are used for POST but can receive GET requests. If no query parameters are given, it will provide default values.
+
 The frontend can be viewed from:
 
 ```
 http://localhost:5173/
 ```
 
+The weather page provides a dashboard for the inside and outside weather for default locations. In order to view another location, the user must sign in and provide a latitude and longitude.
+
+The report page provides a long term historical report by aggregating past reports into one consolidated report. If no date ranges are provided, it will default to the earliest available to the latest available dates.
+
+The about page provides a short summary of the project and its developers.
+
 ## Credits
 
 Background image by Rodion Kutsaiev at [Pexels.com](https://www.pexels.com/photo/red-clouds-and-sky-at-dusk-18713933/)
 Weather icons provided by [Flaticon.com](https://www.flaticon.com/free-icons/weather)
+Authentication provided by [Clerk.com](https://clerk.com/)
+This project utilizes [TailwindCSS](https://tailwindcss.com/)
+
+## License
+
+This project is licensed under the MIT License.
