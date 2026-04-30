@@ -1,14 +1,8 @@
-# Environmental Monitor (wip)
+# Environmental Monitor
 
 A fullstack monorepo with a C# ASP.NET backend and a React frontend built with Vite.
 
 Merged from the [backend](https://github.com/alex-jns/environmental-monitor-backend) and [frontend](https://github.com/alex-jns/environmental-monitor-frontend) repositories.
-
-## Todo
-
-- Finish the README
-- Verify accessibility requirements
-- Create a presentation
 
 ## Overview
 
@@ -97,6 +91,24 @@ The weather page provides a dashboard for the inside and outside weather for def
 The report page provides a long term historical report by aggregating past reports into one consolidated report. If no date ranges are provided, it will default to the earliest available to the latest available dates.
 
 The about page provides a short summary of the project and its developers.
+
+## Troubleshooting
+
+1. Ensure that the Raspberry Pi and sensors are properly connected and configured to send data to the backend.
+
+> The backend is expecting a UDP message from port 11000. It is expecting a JSON response such as:
+
+```
+{
+  temperatureF: 72, // expecting no quotation marks around "temperatureF"
+  "temperatureC": 22,
+  "humidity": 55
+}
+```
+
+2. Check the console output and logs for any error messages or exceptions that may indicate issues with data collection, API integration, or report generation.
+3. Verify that the OpenMeteo API is accessible and that the API parameters (latitude, longitude) are correctly configured.
+4. Check for any file I/O issues when writing JSON files or generating reports, such as permission issues or insufficient disk space.
 
 ## Credits
 
