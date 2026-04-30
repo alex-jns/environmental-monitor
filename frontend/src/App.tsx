@@ -257,6 +257,55 @@ const WeatherCardWithIcon = ({ content }: { content?: string }) => {
   );
 };
 
+/** Decides which icon to show based on daylight. */
+const WeatherIconDaylight = () => {
+  const newWeatherData = useApi();
+
+  switch (newWeatherData?.data?.apiWeather.current.is_day) {
+    // Clear skies
+    case 0:
+      return (
+        <img src="/crescent-moon.png" alt="Clear sky" className="w-8 h-8" />
+      );
+    case 1:
+      return <img src="/sun.png" alt="Clear sky" className="w-8 h-8" />;
+
+    default:
+      return <p>No match</p>;
+  }
+};
+
+/** Weather card but only takes one in-line prop: content (string). */
+const WeatherCardDaylight = () => {
+  const newWeatherData = useApi();
+
+  switch (newWeatherData?.data?.apiWeather.current.is_day) {
+    case 0:
+      return (
+        <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow flex items-center justify-center gap-2">
+          <h2 className="text-2xl font-bold">Moonlight</h2>
+          <WeatherIconDaylight />
+        </div>
+      );
+
+    case 1:
+      return (
+        <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow flex items-center justify-center gap-2">
+          <h2 className="text-2xl font-bold">Daylight</h2>
+          <WeatherIconDaylight />
+        </div>
+      );
+
+    default:
+      return (
+        <div className="weather-card bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow flex items-center justify-center gap-2">
+          <h2 className="text-2xl font-bold">Time of Day</h2>
+          <WeatherIconDaylight />
+        </div>
+      );
+  }
+};
+
 /** Component for the outside weather dashboard. */
 const OutsideWeatherDashboard = () => {
   const newWeatherData = useApi();
@@ -268,6 +317,8 @@ const OutsideWeatherDashboard = () => {
         <WeatherCardWithIcon
           content={newWeatherData?.data?.apiWeather.current.weather_name}
         />
+
+        <WeatherCardDaylight />
 
         <WeatherCard
           title="Temperature"
@@ -284,11 +335,6 @@ const OutsideWeatherDashboard = () => {
         <WeatherCard
           title="Humidity"
           content={`${formatTemp(newWeatherData?.data?.apiWeather.current.relative_humidity_2m ?? 0)}%`}
-        />
-
-        <WeatherCard
-          title="Daylight"
-          content={newWeatherData?.data?.apiWeather.current.is_day_yesorno}
         />
 
         <WeatherCard
@@ -787,6 +833,7 @@ const About = () => {
               <span className="text-gray-400">
                 <img
                   src="https://avatars.githubusercontent.com/u/159482010?v=4"
+                  alt="Displays the profile picture for this user."
                   className="rounded-full object-cover"
                 />
               </span>
@@ -812,6 +859,7 @@ const About = () => {
               <span className="text-gray-400">
                 <img
                   src="https://avatars.githubusercontent.com/u/128431085?v=4"
+                  alt="Displays the profile picture for this user."
                   className="rounded-full object-cover"
                 />
               </span>
